@@ -1,0 +1,71 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-02 18:09+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: forms.py:155
+msgid "Country"
+msgstr "دولة"
+
+#: intergration_models.py:145
+msgid "Mailing List Settings"
+msgstr "إعدادات القائمة البريدية"
+
+#: intergration_models.py:147
+msgid "Enable Mailing list subscription"
+msgstr "تفعيل اشتراك القائمة البريدية"
+
+#: intergration_models.py:149
+msgid "Mailing list checkbox label"
+msgstr "تسمية خانة اختيار القائمة البريدية"
+
+#: mailchimp_page.py:9
+msgid "MailChimp List ID"
+msgstr "معرف قائمة MailChimp"
+
+#: mailchimp_page.py:10
+msgid "Enter the MailChimp list ID to use for this form"
+msgstr "أدخل معرف قائمة MailChimp لاستخدامه لهذا النموذج"
+
+#: mailchimp_page.py:11
+msgid "Double Opt-In"
+msgstr "الاشتراك المزدوج"
+
+#: mailchimp_page.py:12
+msgid "Use double opt-in process for new subscribers"
+msgstr "استخدم عملية الاشتراك المزدوج للمشتركين الجدد"
+
+#: mailchimp_page.py:13
+msgid "Message to show on successful submission"
+msgstr "رسالة لإظهارها عند الإرسال الناجح"
+
+#: mailchimp_page.py:13
+msgid "Thank you text"
+msgstr "شكرا لك النص"
+
+#: mailchimp_page.py:37
+msgid "MailChimp Settings"
+msgstr "إعدادات MailChimp"
+
+#: models.py:16 models.py:37
+msgid "Heading"
+msgstr "عنوان"
+
+#: models.py:17 models.py:38
+msgid "Introduction text"
+msgstr "مقدمة النص"

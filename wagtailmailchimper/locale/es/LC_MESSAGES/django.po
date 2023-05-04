@@ -1,0 +1,71 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-02 18:09+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: forms.py:155
+msgid "Country"
+msgstr "País"
+
+#: intergration_models.py:145
+msgid "Mailing List Settings"
+msgstr "Configuración de la lista de correo"
+
+#: intergration_models.py:147
+msgid "Enable Mailing list subscription"
+msgstr "Habilitar la suscripción a la lista de correo"
+
+#: intergration_models.py:149
+msgid "Mailing list checkbox label"
+msgstr "Etiqueta de la casilla de verificación de la lista de correo"
+
+#: mailchimp_page.py:9
+msgid "MailChimp List ID"
+msgstr "ID de lista de MailChimp"
+
+#: mailchimp_page.py:10
+msgid "Enter the MailChimp list ID to use for this form"
+msgstr "Ingrese la ID de la lista de MailChimp para usar en este formulario"
+
+#: mailchimp_page.py:11
+msgid "Double Opt-In"
+msgstr "Suscripción doble"
+
+#: mailchimp_page.py:12
+msgid "Use double opt-in process for new subscribers"
+msgstr "Use el proceso de suscripción doble para nuevos suscriptores"
+
+#: mailchimp_page.py:13
+msgid "Message to show on successful submission"
+msgstr "Mensaje para mostrar en el envío exitoso"
+
+#: mailchimp_page.py:13
+msgid "Thank you text"
+msgstr "texto de agradecimiento"
+
+#: mailchimp_page.py:37
+msgid "MailChimp Settings"
+msgstr "Configuración de MailChimp"
+
+#: models.py:16 models.py:37
+msgid "Heading"
+msgstr "Título"
+
+#: models.py:17 models.py:38
+msgid "Introduction text"
+msgstr "Texto de introducción"

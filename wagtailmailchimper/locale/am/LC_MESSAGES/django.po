@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-02 18:09+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: forms.py:155
+msgid "Country"
+msgstr "ሀገር"
+
+#: intergration_models.py:145
+msgid "Mailing List Settings"
+msgstr "የደብዳቤ መላኪያ ዝርዝር ቅንጅቶች"
+
+#: intergration_models.py:147
+msgid "Enable Mailing list subscription"
+msgstr "የደብዳቤ ዝርዝር ምዝገባን አንቃ"
+
+#: intergration_models.py:149
+msgid "Mailing list checkbox label"
+msgstr "የደብዳቤ መላኪያ ዝርዝር አመልካች ሳጥን መለያ"
+
+#: mailchimp_page.py:9
+msgid "MailChimp List ID"
+msgstr "የመልእክት ቺምፕ ዝርዝር መታወቂያ"
+
+#: mailchimp_page.py:10
+msgid "Enter the MailChimp list ID to use for this form"
+msgstr "ለዚህ ቅጽ ለመጠቀም የ MailChimp ዝርዝር መታወቂያ ያስገቡ"
+
+#: mailchimp_page.py:11
+msgid "Double Opt-In"
+msgstr "ድርብ መርጦ መግባት"
+
+#: mailchimp_page.py:12
+msgid "Use double opt-in process for new subscribers"
+msgstr "ለአዲስ ተመዝጋቢዎች ሁለት ጊዜ መርጦ የመግባት ሂደትን ይጠቀሙ"
+
+#: mailchimp_page.py:13
+msgid "Message to show on successful submission"
+msgstr "በተሳካ ሁኔታ ማስረከብ ላይ የሚታይ መልዕክት"
+
+#: mailchimp_page.py:13
+msgid "Thank you text"
+msgstr "አመሰግናለሁ ጽሑፍ"
+
+#: mailchimp_page.py:37
+msgid "MailChimp Settings"
+msgstr "የ MailChimp ቅንብሮች"
+
+#: models.py:16 models.py:37
+msgid "Heading"
+msgstr "ርዕስ"
+
+#: models.py:17 models.py:38
+msgid "Introduction text"
+msgstr "የመግቢያ ጽሑፍ"

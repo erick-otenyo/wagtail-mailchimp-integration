@@ -1,0 +1,55 @@
+<div class="field" style="margin-bottom: 0">
+    <div class="control ">
+        <label class="checkbox" style="padding-bottom: 10px">
+            <input type="checkbox" name="{{ widget.name }}" id="id_{{ widget.name }}">
+            <b> {{ widget.label }}</b>
+        </label>
+
+    </div>
+</div>
+
+<style>
+    .interests-section-hidden {
+        display: none;
+    }
+</style>
+
+
+<div style="padding-left: 30px" id="interests_section" class="interests-section-hidden">
+    <div class="field">
+        <label class="label" for="id_{{ widget.interests_field_name }}"> What updates do you want to receive ? </label>
+        <div class="control  multiple-checkbox">
+            <ul id="id_{{ widget.interests_field_name }}">
+                {% for key, value in widget.interests_mapping.items %}
+                    <li>
+                        <label for="id_{{ widget.interests_field_name }}_{{ forloop.counter0 }}" style="display: flex">
+                            <input type="checkbox" name="{{ widget.interests_field_name }}"
+                                   value="{{ key }}"
+                                   id="id_{{ widget.interests_field_name }}_{{ forloop.counter0 }}">
+                            <span style="padding-left: 10px">{{ value }}</span>
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+    const checkbox = document.getElementById("id_{{ widget.name }}")
+    const interests_section = document.getElementById("interests_section")
+
+    // check if we have interests_mapping
+    const has_interests = {{ widget.interests_mapping|yesno:"true,false" }};
+
+    checkbox.addEventListener('change', function (event) {
+        // toggle hiding or showing interests
+        if (has_interests) {
+            if (event.target.checked) {
+                interests_section.classList.remove('interests-section-hidden');
+            } else {
+                interests_section.classList.add('interests-section-hidden');
+            }
+        }
+    })
+
+</script>
