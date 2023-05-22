@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static wagtailcore_tags %}
+
+{% block content %}
+    <main>
+        <section>
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-half-desktop is-full-mobile thank-you-container">
+                        {% if messages %}
+                            <ul class="messages" style="padding-bottom: 40px">
+                                {% for message in messages %}
+                                    <li class="message is-{% if message.tags == 'error' %}danger{% else %}info{% endif %}">
+                                        <div class="message-header">
+                                            <button class="delete" aria-label="delete"></button>
+                                        </div>
+                                        <div class="message-body">
+                                            {{ message }}
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {% if not hide_thank_you_text %}
+                            <h3 class="thank-you-text">
+                                {% if page.thank_you_text %} {{ page.thank_you_text }} {% else %}
+                                    We have received your submission. Thank you! {% endif %}
+                            </h3>
+                        {% endif %}
+                        <div class="back-link-container" style="">
+                            <a href="/" class="button is-rounded is-uppercase has-text-weight-bold back-button">
+                                <span class="icon">
+                                    <i class="fas fa-arrow-left"></i>
+                                </span>
+                                <span>
+                                    Back to Homepage
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock %}
+
+
