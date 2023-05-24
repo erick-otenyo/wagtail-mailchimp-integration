@@ -37,11 +37,11 @@ python manage.py migrate wagtailmailchimp
 
 ## Usage
 
-### Mailchimp Settings
+### Settings
 
 A Mailchimp settings section will be added to the `Settings` section of the Wagtail Admin.
 
-![Mailchimp adminsetting](screenshots/admin_settings.png)
+![Mailchimp admin setting](screenshots/admin_settings.png)
 
 The steps below explain how to add the setup the Mailchimp settings, as shown on the screenshot above
 
@@ -187,7 +187,7 @@ the `choice options in your mailchimp audience signup form`
 After following the above steps and rendering the form in your template, the `Join Our Mailing List` checkbox will be
 appended at the end of your form fields.
 
-You can try it to make sure everything works and users are being added tou your mailing list before making the page
+You can try it to make sure everything works and users are being added to your mailing list before making the page
 public.
 
 You can find and follow a working sample in `sandbox/home/models.py` file
