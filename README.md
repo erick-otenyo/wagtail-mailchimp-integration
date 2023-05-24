@@ -163,27 +163,31 @@ The editor form will look similar to below:
 
 ![Form Integration Page](screenshots/form_integration_page.png)
 
-1. Select the MailChimp Audience you want to integrate. This is a dropdown of the available audiences in your Mailchimp
-   account
+1. Select the MailChimp Audience you want to integrate. This is a dropdown of the available audiences from your
+   Mailchimp account
 2. Set up your custom form fields to match your Mailchimp Audience Signup Form fields. Pay attention to field types with
-   choices like `Checkboxes`, `Radio buttons` and `Dropdowns`, as the choices must exactly match your Mailchimp signup
-   form. In coming versions, the form fields will be automatically set up using the default audience provided in
-   settings. Save the page
+   choices like `Checkboxes`, `Radio buttons` and `Dropdowns`, as the options must exactly match your Mailchimp signup
+   form options.
 
-Go back to the Wagtail Admin Explorer, and locate where the page you created is listed. Hover around the page name, and
+Go back to the Wagtail Admin Explorer, and locate where the page you created is listed. Hover around the page title, and
 you will see a button named `Mailchimp Integration` as below
 
 ![Mailchimp Integration Button](screenshots/mailchimp_integration_button.png)
 
 Click it, and it will open a page, where you will match the Mailchimp signup form fields, with the fields in your form.
+
 Make sure you do the matching correctly as this will inform Mailchimp on how to extract your user data from your Custom
-form. Once
-again, `make sure for choice options on your form match exactly the choice options on your mailchimp audience signup form`
+form.
+
+Once again, make sure for `choice options o=in your page form` match exactly
+the `choice options in your mailchimp audience signup form`
 
 ![Mailchimp fields mapping](screenshots/mailchimp_fields_mapping.png)
 
 After following the above steps and rendering the form in your template, the `Join Our Mailing List` checkbox will be
-appended at the end of your form fields. You can try it to make sure everything works and users are being added tou your
-mailing list before making the page public.
+appended at the end of your form fields.
+
+You can try it to make sure everything works and users are being added tou your mailing list before making the page
+public.
 
 You can find and follow a working sample in `sandbox/home/models.py` file
