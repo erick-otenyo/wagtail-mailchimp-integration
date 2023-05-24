@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "bulma",
 
     "wagtail.contrib.settings",
+    "wagtail.contrib.styleguide",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.embeds",

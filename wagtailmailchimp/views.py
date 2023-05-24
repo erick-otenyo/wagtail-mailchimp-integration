@@ -1,12 +1,16 @@
+import json
 from datetime import date
 
 from django.contrib import messages
 from django.core.mail import mail_admins
 from django.forms.forms import NON_FIELD_ERRORS
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.views.generic import FormView
 from mailchimp3.mailchimpclient import MailChimpError
+from modelcluster.models import get_all_child_relations
+from wagtail.contrib.forms.models import AbstractFormField
 from wagtail.models import Page
 
 from .api import MailchimpApi
@@ -264,18 +268,67 @@ class MailChimpView(FormView):
 def mailchimp_integration_view(request, page_id):
     page = Page.objects.get(pk=page_id)
     form_page = page.specific
+    edit_url = reverse("wagtailadmin_pages:edit", args=[form_page.pk])
+    context = {"page": form_page, "page_edit_url": edit_url}
+    template_name = "wagtailmailchimp/mailchimp_integration_form.html"
 
-    context = {"page": form_page}
+    parent_page = form_page.get_parent()
+    explore_url = reverse("wagtailadmin_explore", args=[parent_page.id])
 
-    if form_page.form_fields_field_name and hasattr(form_page, form_page.form_fields_field_name):
-        form_fields = getattr(form_page, form_page.form_fields_field_name).all()
+    form_fields_rel_name = None
+    # get form fields relation name
+    relations = get_all_child_relations(form_page)
+    for relation in relations:
+        related_name = relation.related_name
+        rels = getattr(form_page, related_name)
+        # check if is instance of AbstractFormField
+        if isinstance(rels.first(), AbstractFormField):
+            form_fields_rel_name = related_name
+            break
 
+    merge_fields = None
+    form_fields = None
+    has_form_fields = False
+    interest_categories = None
+
+    if form_fields_rel_name and hasattr(form_page, form_fields_rel_name):
+        form_fields = getattr(form_page, form_fields_rel_name).all()
         mc_settings = MailchimpSettings.for_request(request)
         api = MailchimpApi(api_key=mc_settings.api_key)
+        lists = api.get_lists()
+
+        for audience in lists:
+            if audience.get("id") == form_page.audience_list_id:
+                context.update({"audience": audience})
+                break
         merge_fields = api.get_merge_fields_for_list(form_page.audience_list_id)
+        interest_categories = api.get_interests_for_list(form_page.audience_list_id)
 
-        form = MailchimpIntegrationForm(merge_fields=merge_fields, form_fields=form_fields)
+    if form_fields is not None:
+        has_form_fields = True
 
-        context.update({"form": form})
+    context.update({"has_form_fields": has_form_fields})
 
-    return render(request, template_name="wagtailmailchimp/mailchimp_integration_form.html", context=context)
+    if request.method == 'POST':
+        form = MailchimpIntegrationForm(merge_fields=merge_fields, form_fields=form_fields, data=request.POST)
+
+        if form.is_valid():
+            merge_fields_data = json.dumps(form.cleaned_data)
+            interest_categories_data = json.dumps(interest_categories)
+            form_page.merge_fields_mapping = merge_fields_data
+            form_page.interest_categories = interest_categories_data
+            form_page.save()
+
+            return HttpResponseRedirect(explore_url)
+        else:
+            context.update({"form": form})
+            return render(request, template_name, context=context)
+
+    initial_data = None
+    if form_page.merge_fields_mapping:
+        initial_data = json.loads(form_page.merge_fields_mapping)
+
+    form = MailchimpIntegrationForm(merge_fields=merge_fields, form_fields=form_fields, initial=initial_data)
+    context.update({"form": form})
+
+    return render(request, template_name, context=context)

@@ -206,26 +206,60 @@ class MailChimpForm(forms.Form):
 
 
 class MailchimpIntegrationForm(forms.Form):
-    def __init__(self, merge_fields, form_fields, *args, **kwargs):
+    def __init__(self, merge_fields=None, form_fields=None, *args, **kwargs):
         # Initialize the form instance.
         super(MailchimpIntegrationForm, self).__init__(*args, **kwargs)
 
-        choices = list(((x.clean_name, x.label) for x in form_fields))
+        if merge_fields and form_fields:
+            merge_fields.insert(0, ({
+                "tag": "EMAIL",
+                "name": "Email Address",
+                "type": "email",
+                "required": "true",
+            }))
 
-        choices.insert(0, ("", "-- Select field to merge--"))
+            for field in merge_fields:
+                choices = [("", "-- Select field to merge--")]
 
-        merge_fields.insert(0, ({
-            "tag": "EMAIL",
-            "name": "Email Address",
-            "required": "true",
-        }))
+                if field.get("type") == "email":
+                    for form_field in form_fields:
+                        if form_field.field_type == 'email':
+                            choices.append((form_field.clean_name, form_field.label))
+                elif field.get("type") == "number":
+                    for form_field in form_fields:
+                        if form_field.field_type == 'number':
+                            choices.append((form_field.clean_name, form_field.label))
+                elif field.get("type") == "url":
+                    for form_field in form_fields:
+                        if form_field.field_type == 'url':
+                            choices.append((form_field.clean_name, form_field.label))
+                elif field.get("type") == "radio":
+                    for form_field in form_fields:
+                        if form_field.field_type == 'radio':
+                            choices.append((form_field.clean_name, form_field.label))
+                elif field.get("type") == "dropdown":
+                    for form_field in form_fields:
+                        if form_field.field_type == 'dropdown':
+                            choices.append((form_field.clean_name, form_field.label))
+                elif field.get("type") == "checkboxes":
+                    for form_field in form_fields:
+                        if form_field.field_type == 'checkboxes':
+                            choices.append((form_field.clean_name, form_field.label))
+                elif field.get("type") == "date" or field.get("type") == "birthday":
+                    for form_field in form_fields:
+                        if form_field.field_type == 'date':
+                            choices.append((form_field.clean_name, form_field.label))
+                else:
+                    for form_field in form_fields:
+                        if form_field.field_type == 'singleline' or form_field.field_type == "multiline":
+                            choices.append((form_field.clean_name, form_field.label))
 
-        for field in merge_fields:
-            kwargs = {
-                'label': field.get('name', None),
-                'required': field.get('required', True)
-            }
-            name = field.get("tag")
+                kwargs = {
+                    'label': field.get('name', None),
+                    'required': field.get('required', True)
+                }
 
-            self.fields.update({name: forms.ChoiceField(choices=choices, widget=CustomSelect, **kwargs)})
-            self.fields[name].label = field.get("name")
+                name = field.get("tag")
+
+                self.fields.update({name: forms.ChoiceField(choices=choices, widget=CustomSelect, **kwargs)})
+                self.fields[name].label = field.get("name")

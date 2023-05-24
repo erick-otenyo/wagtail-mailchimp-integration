@@ -7,28 +7,82 @@
 {% endblock %}
 
 {% block content %}
+
+    <style>
+
+        .container {
+            padding-top: 100px;
+        }
+
+        .form-container {
+            width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Styling form fields */
+        .form-container input[type="text"],
+        .form-container input[type="email"],
+        .form-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Styling form submit button */
+        .form-container button {
+            background-color: #4CAF50;
+            color: white;
+            margin: 10px 0;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+
+        /* Styling form labels */
+        .form-container label {
+            display: block;
+            font-weight: 500;
+            margin: 10px 0;
+        }
+
+        /* Styling form error messages */
+        .form-container .errorlist {
+            color: red;
+            margin-bottom: 20px;
+        }
+
+        /* Styling form success message */
+        .form-container .success-message {
+            color: green;
+            margin-bottom: 20px;
+        }
+    </style>
     <main>
         <section>
             <div class="container">
-                <div class="columns is-centered">
-                    <div class="column is-half-desktop is-full-mobile">
-                        <h2 class="section-subheader" style="padding-bottom: 20px">{{ page.title }}</h2>
-                        <div class="form-column">
-                            <form action="{% pageurl page %}" method="POST">
-                                {% csrf_token %}
-                                {{ form|bulma }}
-                                <div class="field">
-                                    <button type="submit" class="submit-button button">Submit</button>
-                                </div>
-                            </form>
+                <div class="form-container">
+                    <h2 class="section-subheader" style="padding-bottom: 20px">{{ page.title }}</h2>
+                    <form action="{% pageurl page %}" method="POST">
+                        {% csrf_token %}
+                        {{ form|bulma }}
+                        <div class="field">
+                            <button type="submit" class="submit-button button">Submit</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </section>
     </main>
 {% endblock content %}
-
-{% block page_js %}
-    <script src="https://cdn.polyfill.io/v2/polyfill.js"></script>
-{% endblock %}

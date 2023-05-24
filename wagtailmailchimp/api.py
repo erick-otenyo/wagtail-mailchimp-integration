@@ -1,5 +1,5 @@
-from mailchimp3 import MailChimp
 from django.core.cache import cache
+from mailchimp3 import MailChimp
 
 
 class MailchimpApi:
@@ -92,6 +92,28 @@ class MailchimpApi:
                 return []
 
         return interests
+
+    def get_interests_for_list(self, list_id):
+        interest_categories = self.get_interest_categories_for_list(list_id=list_id)
+
+        categories = []
+
+        for category in interest_categories:
+            category_id = category.get('id', '')
+
+            interest_category = {
+                "id": category_id,
+                "title": category.get('title', ''),
+                'type': category.get('type', '')
+            }
+
+            interests = self.get_interests_for_interest_category(list_id=list_id, interest_category_id=category_id)
+
+            interest_category['interests'] = interests
+
+            categories.append(interest_category)
+
+        return categories
 
     def add_user_to_list(self, list_id, data):
         return self.client.lists.members.create(list_id=list_id, data=data)
