@@ -1,7 +1,5 @@
 include README.md
 include LICENSE
-recursive-include wagtailmailchimp *.html
 recursive-include wagtailmailchimp *.py
-recursive-include wagtailmailchimp *.py
-recursive-include wagtailmailchimp/static *
 recursive-include wagtailmailchimp/templates *
+recursive-include wagtailmailchimp *.html
