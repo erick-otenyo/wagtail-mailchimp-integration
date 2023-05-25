@@ -106,6 +106,8 @@ class AbstractMailchimpIntegrationForm(AbstractForm, models.Model):
         FieldPanel("audience_list_id", widget=MailchimpAudienceListWidget),
     ]
 
+    integration_name = "mailchimp"
+
     def remove_mailchimp_field(self, form):
         form.fields.pop(self.mailchimp_field_name, None)
         return form.cleaned_data.pop(self.mailchimp_field_name, None)
