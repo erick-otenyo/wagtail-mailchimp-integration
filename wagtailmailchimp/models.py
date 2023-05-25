@@ -242,9 +242,19 @@ class AbstractMailchimpIntegrationForm(AbstractForm, models.Model):
             "interest_categories": {}
         }
 
-        merge_fields_mapping = json.loads(self.merge_fields_mapping)
+        merge_fields_mapping = {}
+        if self.merge_fields_mapping:
+            try:
+                merge_fields_mapping = json.loads(self.merge_fields_mapping)
+            except Exception:
+                pass
 
-        interest_categories = json.loads(self.interest_categories)
+        interest_categories = {}
+        if self.interest_categories:
+            try:
+                interest_categories = json.loads(self.interest_categories)
+            except Exception:
+                pass
 
         for key, value in merge_fields_mapping.items():
             if key == "EMAIL":

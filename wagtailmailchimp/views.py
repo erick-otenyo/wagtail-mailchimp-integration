@@ -326,7 +326,10 @@ def mailchimp_integration_view(request, page_id):
 
     initial_data = None
     if form_page.merge_fields_mapping:
-        initial_data = json.loads(form_page.merge_fields_mapping)
+        try:
+            initial_data = json.loads(form_page.merge_fields_mapping)
+        except Exception:
+            pass
 
     form = MailchimpIntegrationForm(merge_fields=merge_fields, form_fields=form_fields, initial=initial_data)
     context.update({"form": form})
