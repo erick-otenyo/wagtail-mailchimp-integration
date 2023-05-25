@@ -18,7 +18,7 @@ from .api import MailchimpApi
 from .widgets import MailchimpSubscriberOptinWidget, MailchimpAudienceListWidget
 
 
-@register_setting(icon="cogs")
+@register_setting
 class MailchimpSettings(BaseSiteSetting):
     api_key = models.CharField(verbose_name=_("Mailchimp API Key"), max_length=50, blank=True, null=True,
                                help_text=_("Mailchimp API Key "))
