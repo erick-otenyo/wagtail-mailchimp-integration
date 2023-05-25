@@ -86,7 +86,7 @@ class AbstractMailChimpPage(models.Model):
     ]
 
 
-class AbstractMailchimpIntegrationForm(AbstractForm, models.Model):
+class AbstractMailchimpIntegrationForm(AbstractForm):
     class Meta:
         abstract = True
 
