@@ -179,8 +179,8 @@ Click it, and it will open a page, where you will match the Mailchimp signup for
 Make sure you do the matching correctly as this will inform Mailchimp on how to extract your user data from your Custom
 form.
 
-Once again, make sure for `choice options o=in your page form` match exactly
-the `choice options in your mailchimp audience signup form`
+Once again, make sure for `choice options in your page form fields` match exactly
+the `choice options in your mailchimp audience signup form on Mailchimp`
 
 ![Mailchimp fields mapping](screenshots/mailchimp_fields_mapping.png)
 
