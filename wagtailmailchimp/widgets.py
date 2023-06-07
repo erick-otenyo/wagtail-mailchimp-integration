@@ -1,3 +1,4 @@
+from django.db.utils import ProgrammingError
 from django.forms.widgets import Input, Select
 from wagtail.models import Site
 
@@ -46,7 +47,11 @@ class MailchimpAudienceListWidget(Select):
     def get_mailchimp_audience_lists(self):
         from .models import MailchimpSettings
 
-        current_site = Site.objects.get(is_default_site=True)
+        # catch error where 'wagtailcore_site' relation is not migrated to db yet
+        try:
+            current_site = Site.objects.get(is_default_site=True)
+        except ProgrammingError:
+            return []
 
         mc_settings = MailchimpSettings.for_site(current_site)
         mailchimp = MailchimpApi(api_key=mc_settings.api_key)
