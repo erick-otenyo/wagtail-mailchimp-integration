@@ -4,10 +4,7 @@ from django.contrib import messages
 from django.db import models
 from django.forms import BooleanField
 from django.template import Context, Template
-from django.template.response import TemplateResponse
-from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.csrf import csrf_exempt
 from mailchimp3.mailchimpclient import MailChimpError
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 from wagtail.contrib.forms.models import AbstractForm
@@ -112,85 +109,49 @@ class AbstractMailchimpIntegrationForm(AbstractForm):
         form.fields.pop(self.mailchimp_field_name, None)
         return form.cleaned_data.pop(self.mailchimp_field_name, None)
 
-    def process_form_submission(self, form, request=None):
+    def serve(self, request, *args, **kwargs):
+        # We need to access the request later on in integration operation
+        self.request = request
 
+        return super(AbstractMailchimpIntegrationForm, self).serve(request, *args, **kwargs)
+
+    def process_form_submission(self, form):
         self.remove_mailchimp_field(form)
 
         form_submission = super(AbstractMailchimpIntegrationForm, self).process_form_submission(form)
 
-        try:
-            self.post_process_submission(form, form_submission)
-        except Exception as e:
-            pass
+        if self.request:
+            try:
+
+                form_data = dict(form.data)
+                user_checked_sub = bool(form_data.get(self.mailchimp_field_name, False))
+                user_selected_interests = form_data.get(self.mailchimp_interests_field_name, None)
+
+                if user_checked_sub:
+                    self.mailchimp_integration_operation(self, form=form, request=self.request,
+                                                         user_selected_interests=user_selected_interests)
+            except Exception as e:
+                pass
 
         return form_submission
 
-    def post_process_submission(self, form, form_submission):
-        pass
-
-    def should_process_form(self, request, form_data):
-        return True
-
-    def render_landing_page(self, request, form_submission=None, *args, form_context=None, **kwargs):
-        context = self.get_context(request)
-        context['form_submission'] = form_submission
-        if form_context:
-            context.update(form_context)
-
-        return TemplateResponse(
-            request,
-            self.get_landing_page_template(request),
-            context
-        )
-
-    @method_decorator(csrf_exempt)
-    def serve(self, request, *args, **kwargs):
-        if request.method == 'POST':
-            form = self.get_form(request.POST, request.FILES, page=self, user=request.user)
-
-            if form.is_valid():
-                form_submission = None
-                hide_thank_you_text = False
-                if self.should_process_form(request, form.cleaned_data):
-                    form_submission = self.process_form_submission(form)
-                    form_data = dict(form.data)
-                    user_checked_sub = bool(form_data.get(self.mailchimp_field_name, False))
-                    user_selected_interests = form_data.get(self.mailchimp_interests_field_name, None)
-
-                    if user_checked_sub:
-                        self.integration_operation(self, form=form, request=request,
-                                                   user_selected_interests=user_selected_interests)
-                else:
-                    # we have an issue with the form submission.Don't show thank you text
-                    hide_thank_you_text = True
-
-                return self.render_landing_page(request, form_submission,
-                                                *args,
-                                                form_context={'hide_thank_you_text': hide_thank_you_text},
-                                                **kwargs)
-
-        form = self.get_form(page=self, user=request.user)
-        context = self.get_context(request)
+    def get_form(self, *args, **kwargs):
+        form = super(AbstractMailchimpIntegrationForm, self).get_form(*args, **kwargs)
 
         if self.has_list_id_and_email:
             form.fields[self.mailchimp_field_name] = BooleanField(
                 label='',
                 required=False,
                 widget=MailchimpSubscriberOptinWidget(
-                    interest_categories=self.get_data().get("interest_categories", []),
+                    interest_categories=self.get_mc_data().get("interest_categories", []),
                     label=self.mailing_list_checkbox_label or self.default_mailing_list_checkbox_label,
                     interests_field_name=self.mailchimp_interests_field_name
                 )
             )
 
-        context['form'] = form
-        return TemplateResponse(
-            request,
-            self.get_template(request),
-            context
-        )
+        return form
 
-    def integration_operation(self, instance, **kwargs):
+    def mailchimp_integration_operation(self, instance, **kwargs):
         request = kwargs.get('request', None)
 
         mc_settings = MailchimpSettings.for_request(request)
@@ -199,8 +160,8 @@ class AbstractMailchimpIntegrationForm(AbstractForm):
 
         user_selected_interests = kwargs.get('user_selected_interests', None)
 
-        rendered_dictionary = self.render_dictionary(
-            self.format_form_submission(kwargs['form']),
+        rendered_dictionary = self.render_mc_dictionary(
+            self.format_mc_form_submission(kwargs['form']),
             user_selected_interests=user_selected_interests
         )
 
@@ -230,14 +191,14 @@ class AbstractMailchimpIntegrationForm(AbstractForm):
                     request, messages.ERROR,
                     "We are having issues adding you to our mailing list. We will try to add you later")
 
-    def format_form_submission(self, form):
+    def format_mc_form_submission(self, form):
         formatted_form_data = {}
 
         for k, v in form.cleaned_data.items():
             formatted_form_data[k.replace('-', '_')] = v
         return formatted_form_data
 
-    def get_data(self):
+    def get_mc_data(self):
         data = {
             "email_field": None,
             "merge_fields": {},
@@ -268,16 +229,17 @@ class AbstractMailchimpIntegrationForm(AbstractForm):
 
         return data
 
-    def get_merge_fields(self):
-        if 'merge_fields' in self.get_data():
-            return self.get_data()['merge_fields']
+    def get_mc_merge_fields(self):
+        data = self.get_mc_data()
+        if 'merge_fields' in data:
+            return data.get('merge_fields')
         return {}
 
-    def get_email_field_template(self):
-        return "{}{}{}".format("{{", self.get_data()['email_field'], "}}")
+    def get_mc_email_field_template(self):
+        return "{}{}{}".format("{{", self.get_mc_data()['email_field'], "}}")
 
-    def get_merge_fields_template(self):
-        fields = self.get_merge_fields()
+    def get_mc_merge_fields_template(self):
+        fields = self.get_mc_merge_fields()
         for key, value in fields.items():
             if value:
                 fields[key] = "{}{}{}".format("{{", value, "}}")
@@ -285,24 +247,25 @@ class AbstractMailchimpIntegrationForm(AbstractForm):
 
     @property
     def has_list_id_and_email(self):
-        return self.audience_list_id and self.get_email_address()
+        return bool(self.audience_list_id and self.get_mc_email_address())
 
-    def get_email_address(self):
-        if "email_field" in self.get_data():
-            return self.get_data().get("email_field")
+    def get_mc_email_address(self):
+        data = self.get_mc_data()
+        if "email_field" in data:
+            return data.get("email_field")
         return None
 
-    def combine_interest_categories(self):
+    def combine_mc_interest_categories(self):
         interest_dict = {}
-        for interest_category in self.get_data().get('interest_categories', []):
+        for interest_category in self.get_mc_data().get('interest_categories', []):
             for interest in interest_category.get("interests", []):
                 interest_dict.update({interest.get("id"): interest.get("id")})
 
         return interest_dict
 
-    def render_dictionary(self, form_submission, user_selected_interests=None):
+    def render_mc_dictionary(self, form_submission, user_selected_interests=None):
 
-        interests = self.combine_interest_categories(),
+        interests = self.combine_mc_interest_categories(),
 
         if user_selected_interests:
             interests = {}
@@ -310,8 +273,8 @@ class AbstractMailchimpIntegrationForm(AbstractForm):
                 interests[interest] = True
 
         rendered_dictionary_template = json.dumps({
-            'email_address': self.get_email_field_template(),
-            'merge_fields': self.get_merge_fields_template(),
+            'email_address': self.get_mc_email_field_template(),
+            'merge_fields': self.get_mc_merge_fields_template(),
             'interests': interests,
             'status': 'subscribed',
         })
