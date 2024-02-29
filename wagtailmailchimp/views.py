@@ -1,12 +1,12 @@
 import json
 from datetime import date
 
-from django.contrib import messages
 from django.core.mail import mail_admins
 from django.forms.forms import NON_FIELD_ERRORS
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils.translation import gettext as _
 from django.views.generic import FormView
 from mailchimp3.mailchimpclient import MailChimpError
 from modelcluster.models import get_all_child_relations
@@ -206,9 +206,6 @@ class MailChimpView(FormView):
             if interests_payload:
                 data['interests'] = interests_payload
 
-            if self.page_instance.success_redirect_page:
-                self.success_url = self.page_instance.success_redirect_page.url
-
             try:
                 list_id = self.page_instance.list_id
                 api.add_user_to_list(list_id=list_id, data=data)
@@ -218,16 +215,11 @@ class MailChimpView(FormView):
                     error = e.args[0]
                     if error['title']:
                         if error['title'] == "Member Exists":
-                            if self.success_url:
-                                messages.add_message(self.request, messages.INFO,
-                                                     "You are already subscribed to our mailing list. Thank you!")
-                                return super(MailChimpView, self).form_valid(form)
-                            else:
-                                context.update({
-                                    "success_message": "You are already subscribed to our mailing list. Thank you!",
-                                    "form": self.get_form(),
-                                })
-                                return self.render_to_response(context)
+                            context.update({
+                                "success_message": _("You are already subscribed to our mailing list. Thank you!"),
+                                "form": self.get_form(),
+                            })
+                            return self.render_to_response(context)
 
             except Exception as e:
                 error_traceback = e
@@ -241,24 +233,14 @@ class MailChimpView(FormView):
             mail_admins("Error adding user to mailing list", str(error_traceback), fail_silently=True)
 
             form.errors[NON_FIELD_ERRORS] = form.error_class(
-                ["We are having issues adding you to our mailing list. Please try later"]
+                [_("We are having issues adding you to our mailing list. Please try later")]
             )
             return super(MailChimpView, self).form_invalid(form)
 
-        default_success_message = "You have been successfully added to our mailing list"
-
-        if self.success_url:
-            if self.page_instance.thank_you_text:
-                message = self.page_instance.thank_you_text
-            else:
-                message = default_success_message
-
-            messages.add_message(self.request, messages.INFO, message)
-
-            return super(MailChimpView, self).form_valid(form)
+        default_success_message = _("You have been successfully added to our mailing list")
 
         context.update({
-            "success_message": "You have been successfully added to our mailing list",
+            "success_message": self.page_instance.thank_you_text or default_success_message,
             "form": self.get_form(),
         })
 
