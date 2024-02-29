@@ -41,18 +41,9 @@ class AbstractMailChimpPage(models.Model):
                                            'If enabled, users must confirm their subscription via '
                                            'an email sent by MailChimp'))
 
-    success_redirect_page = models.ForeignKey(
-        'wagtailcore.Page',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-        verbose_name=_("Success Redirect Page"),
-        help_text=_(
-            "Page to redirect to after successful submission.Leave unselected to show this page with an empty form")
-    )
-
-    thank_you_text = models.TextField(blank=True, null=True, help_text=_("Message to show on successful submission"),
+    thank_you_text = models.TextField(blank=True, null=True,
+                                      default="You have been successfully added to our mailing list. Thank you!",
+                                      help_text=_("Message to show on successful submission"),
                                       verbose_name=_("Thank you text"))
 
     class Meta(object):
@@ -77,7 +68,6 @@ class AbstractMailChimpPage(models.Model):
                 FieldPanel('list_id', widget=MailchimpAudienceListWidget),
                 FieldPanel('double_optin'),
             ], classname='label-above'),
-            FieldPanel('success_redirect_page')
         ], (_('MailChimp Settings'))),
         FieldPanel('thank_you_text')
     ]

@@ -11,7 +11,6 @@ class MailchimpApi:
 
     def init_api(self, api_key):
         try:
-
             self.client = MailChimp(mc_api=api_key)
             self.is_active = True
         except Exception as e:

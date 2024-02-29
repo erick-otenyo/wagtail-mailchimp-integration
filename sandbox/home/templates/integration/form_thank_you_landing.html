@@ -3,7 +3,7 @@
 
 {% block content %}
     <main>
-        <section>
+        <section style="margin-top: 100px">
             <div class="container">
                 <div class="columns is-centered">
                     <div class="column is-half-desktop is-full-mobile thank-you-container">
@@ -21,12 +21,6 @@
                                 {% endfor %}
                             </ul>
                         {% endif %}
-                        {% if not hide_thank_you_text %}
-                            <h3 class="thank-you-text">
-                                {% if page.thank_you_text %} {{ page.thank_you_text }} {% else %}
-                                    We have received your submission. Thank you! {% endif %}
-                            </h3>
-                        {% endif %}
                         <div class="back-link-container" style="">
                             <a href="/" class="button is-rounded is-uppercase has-text-weight-bold back-button">
                                 <span class="icon">
@@ -43,5 +37,3 @@
         </section>
     </main>
 {% endblock %}
-
-
