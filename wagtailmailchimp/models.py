@@ -105,6 +105,11 @@ class AbstractMailchimpIntegrationForm(AbstractForm):
 
         return super(AbstractMailchimpIntegrationForm, self).serve(request, *args, **kwargs)
 
+    def should_perform_mailchimp_integration_operation(self, request, form):
+        # override this method to add custom logic to determine if the
+        # mailchimp integration operation should be performed
+        return True
+
     def process_form_submission(self, form):
         self.remove_mailchimp_field(form)
 
@@ -117,7 +122,7 @@ class AbstractMailchimpIntegrationForm(AbstractForm):
                 user_checked_sub = bool(form_data.get(self.mailchimp_field_name, False))
                 user_selected_interests = form_data.get(self.mailchimp_interests_field_name, None)
 
-                if user_checked_sub:
+                if user_checked_sub and self.should_perform_mailchimp_integration_operation(self.request, form):
                     self.mailchimp_integration_operation(self, form=form, request=self.request,
                                                          user_selected_interests=user_selected_interests)
             except Exception as e:
