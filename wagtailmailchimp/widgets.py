@@ -1,8 +1,10 @@
 from django.db.utils import ProgrammingError
 from django.forms.widgets import Input, Select
 from wagtail.models import Site
+from django.utils.translation import gettext as _
 
 from .api import MailchimpApi
+from .errors import MailchimpApiError
 
 
 class CustomSelect(Select):
@@ -32,17 +34,31 @@ class MailchimpSubscriberOptinWidget(Input):
         return ctx
 
 
-class MailchimpAudienceListWidget(Select):
-    def __init__(self, attrs=None, choices=()):
-        super().__init__(attrs, choices)
+class MailchimpAudienceSelectWidget(Input):
+    template_name = 'wagtailmailchimp/widgets/audience_select_widget.html'
 
-        audience_lists = self.get_mailchimp_audience_lists()
-        audience_choices = [("", "-- None --")]
+    def get_context(self, name, value, attrs):
+        ctx = super().get_context(name, value, attrs)
+        mailchimp_error = None
 
-        for audience in audience_lists:
-            audience_choices.append([audience.get("id"), audience.get("name")])
+        audiences = []
 
-        self.choices = audience_choices
+        try:
+            audiences = self.get_mailchimp_audience_lists()
+        except MailchimpApiError as e:
+            mailchimp_error = e.message
+        except Exception as e:
+            mailchimp_error = _("Error obtaining Mailchimp audiences. Please make sure the Mailchimp API "
+                                "key in Mailchimp Settings is correct")
+
+        ctx["widget"].update({
+            "value": value,
+            "mailchimp_error": mailchimp_error,
+            "audiences": audiences,
+            "no_audiences_message": _("No Mailchimp audiences found. Please create one on Mailchimp and try again.")
+        })
+
+        return ctx
 
     def get_mailchimp_audience_lists(self):
         from .models import MailchimpSettings
@@ -54,6 +70,10 @@ class MailchimpAudienceListWidget(Select):
             return []
 
         mc_settings = MailchimpSettings.for_site(current_site)
+
+        if not mc_settings.api_key:
+            raise MailchimpApiError("Mailchimp API key is not set")
+
         mailchimp = MailchimpApi(api_key=mc_settings.api_key)
         lists = mailchimp.get_lists()
 

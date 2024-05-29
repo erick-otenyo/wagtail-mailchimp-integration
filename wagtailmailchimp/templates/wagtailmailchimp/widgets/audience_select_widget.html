@@ -1,0 +1,26 @@
+<select name="{{ widget.name }}" {% include "django/forms/widgets/attrs.html" %}>
+    <option value="">
+        -- None --
+    </option>
+    {% for audience in widget.audiences %}
+        <option value="{{ audience.id }}" {% if widget.value == audience.id %} selected{% endif %}>
+            {{ audience.name }}
+        </option>
+    {% endfor %}
+</select>
+
+{% if widget.mailchimp_error %}
+    <div class="help-block help-warning">
+        <svg class="icon icon-warning icon" aria-hidden="true">
+            <use href="#icon-warning"></use>
+        </svg>
+        {{ widget.mailchimp_error }}
+    </div>
+{% elif not widget.audiences %}
+    <div class="help-block help-warning">
+        <svg class="icon icon-warning icon" aria-hidden="true">
+            <use href="#icon-warning"></use>
+        </svg>
+        {{ widget.no_audiences_message }}
+    </div>
+{% endif %}

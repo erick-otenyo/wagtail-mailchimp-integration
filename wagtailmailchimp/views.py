@@ -96,7 +96,7 @@ class MailChimpView(FormView):
 
         api = self.get_api()
 
-        if self.interest_categories is None and api.is_active:
+        if self.interest_categories is None:
             list_id = self.page_instance.list_id
 
             interest_categories = api.get_interest_categories_for_list(list_id=list_id)
@@ -133,7 +133,7 @@ class MailChimpView(FormView):
 
         api = self.get_api()
 
-        if self.merge_fields is None and api.is_active:
+        if self.merge_fields is None:
             self.merge_fields = api.get_merge_fields_for_list(self.page_instance.list_id)
 
         # If we don't have any merge variables to build a form from,
@@ -153,7 +153,6 @@ class MailChimpView(FormView):
 
         merge_fields = self.get_merge_fields()
         interest_categories = self.get_interest_categories()
-
         return MailChimpForm(merge_fields, interest_categories, **self.get_form_kwargs())
 
     def get_template_names(self):
@@ -196,7 +195,7 @@ class MailChimpView(FormView):
         context = {'page': self.page_instance, 'self': self.page_instance}
 
         # Must have an email address.
-        if api.is_active and 'EMAIL' in clean_merge_fields:
+        if 'EMAIL' in clean_merge_fields:
             data = {
                 'email_address': clean_merge_fields.pop('EMAIL'),
                 'merge_fields': clean_merge_fields,
@@ -224,7 +223,7 @@ class MailChimpView(FormView):
             except Exception as e:
                 error_traceback = e
         else:
-            if not api.is_active:
+            if not api:
                 error_traceback = "MAILCHIMP API not active"
             else:
                 error_traceback = "No email in fields"
