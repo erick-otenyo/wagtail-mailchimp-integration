@@ -4,17 +4,7 @@ from mailchimp3 import MailChimp
 
 class MailchimpApi:
     def __init__(self, api_key):
-        self.client = None
-        self.is_active = False
-
-        self.init_api(api_key)
-
-    def init_api(self, api_key):
-        try:
-            self.client = MailChimp(mc_api=api_key)
-            self.is_active = True
-        except Exception as e:
-            return None
+        self.client = MailChimp(mc_api=api_key)
 
     def get_lists(self, fields='lists.id,lists.name'):
         cache_key = f"get-lists-{fields}"
@@ -116,3 +106,6 @@ class MailchimpApi:
 
     def add_user_to_list(self, list_id, data):
         return self.client.lists.members.create(list_id=list_id, data=data)
+
+    def ping(self):
+        return self.client.ping.get()

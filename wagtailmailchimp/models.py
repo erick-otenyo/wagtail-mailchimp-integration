@@ -1,6 +1,7 @@
 import json
 
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms import BooleanField
 from django.template import Context, Template
@@ -12,7 +13,7 @@ from wagtail.contrib.settings.models import BaseSiteSetting
 from wagtail.contrib.settings.registry import register_setting
 
 from .api import MailchimpApi
-from .widgets import MailchimpSubscriberOptinWidget, MailchimpAudienceListWidget
+from .widgets import MailchimpSubscriberOptinWidget, MailchimpAudienceSelectWidget
 
 
 @register_setting
@@ -27,6 +28,19 @@ class MailchimpSettings(BaseSiteSetting):
         FieldPanel("api_key"),
         FieldPanel("default_audience_id"),
     ]
+
+    def clean_fields(self, exclude=None):
+        super().clean()
+
+        if not self.api_key:
+            return
+
+        try:
+            # Check if the API key is valid
+            api = MailchimpApi(self.api_key)
+            api.ping()
+        except Exception as e:
+            raise ValidationError({'api_key': str(e)})
 
 
 class AbstractMailChimpPage(models.Model):
@@ -65,7 +79,7 @@ class AbstractMailChimpPage(models.Model):
     content_panels = [
         MultiFieldPanel([
             FieldRowPanel([
-                FieldPanel('list_id', widget=MailchimpAudienceListWidget),
+                FieldPanel('list_id', widget=MailchimpAudienceSelectWidget),
                 FieldPanel('double_optin'),
             ], classname='label-above'),
         ], (_('MailChimp Settings'))),
@@ -90,7 +104,7 @@ class AbstractMailchimpIntegrationForm(AbstractForm):
                                                    verbose_name=_("Mailing list checkbox label"))
 
     integration_panels = [
-        FieldPanel("audience_list_id", widget=MailchimpAudienceListWidget),
+        FieldPanel("audience_list_id", widget=MailchimpAudienceSelectWidget),
     ]
 
     is_mailchimp_integration = True
@@ -105,6 +119,16 @@ class AbstractMailchimpIntegrationForm(AbstractForm):
 
         return super(AbstractMailchimpIntegrationForm, self).serve(request, *args, **kwargs)
 
+    def should_perform_mailchimp_integration_operation(self, request, form):
+        # override this method to add custom logic to determine if the
+        # mailchimp integration operation should be performed
+        return True
+
+    def show_page_listing_mailchimp_integration_button(self):
+        # override this method to add custom logic to determine if the
+        # mailchimp integration button should be shown in the page listing
+        return True
+
     def process_form_submission(self, form):
         self.remove_mailchimp_field(form)
 
@@ -112,12 +136,11 @@ class AbstractMailchimpIntegrationForm(AbstractForm):
 
         if self.request:
             try:
-
                 form_data = dict(form.data)
                 user_checked_sub = bool(form_data.get(self.mailchimp_field_name, False))
                 user_selected_interests = form_data.get(self.mailchimp_interests_field_name, None)
 
-                if user_checked_sub:
+                if user_checked_sub and self.should_perform_mailchimp_integration_operation(self.request, form):
                     self.mailchimp_integration_operation(self, form=form, request=self.request,
                                                          user_selected_interests=user_selected_interests)
             except Exception as e:
